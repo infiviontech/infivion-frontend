@@ -8,7 +8,7 @@ const API_BASE_URL = (function() {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         return 'http://localhost:5000/api';
     }
-    // REPLACE below with your actual Render backend URL (e.g. https://infivion-backend-xxxx.onrender.com/api)
+    // Production: Render backend URL (contact form, OTP, mail)
     return 'https://infivion-backend.onrender.com/api';
 })();
 

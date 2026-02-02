@@ -3,12 +3,12 @@
    JavaScript for Navigation, Animations & Contact Form
    ================================================ */
 
-// API Base URL - Auto-detects localhost. For production: replace with your Render backend URL
+// API Base URL — MUST point to YOUR Render backend. Never use overbridgenet.com/jsv8/offer or any other URL.
 const API_BASE_URL = (function() {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         return 'http://localhost:5000/api';
     }
-    // Production: Render backend URL (contact form, OTP, mail)
+    // Production: ONLY your Render backend (OTP/contact endpoints live here)
     return 'https://infivion-backend.onrender.com/api';
 })();
 
@@ -272,14 +272,20 @@ function initContactForm() {
         sendOtpBtn.disabled = true;
         
         try {
+            // 90s timeout - Render free tier can take 30-60s to wake from sleep
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 90000);
+            
             const response = await fetch(`${API_BASE_URL}/contact/otp/send`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, name })
+                body: JSON.stringify({ email, name }),
+                signal: controller.signal
             });
             
+            clearTimeout(timeoutId);
             const data = await response.json();
             
             if (!response.ok) {
@@ -297,7 +303,11 @@ function initContactForm() {
             
         } catch (error) {
             console.error('Error sending OTP:', error);
-            showAlert(error.message || 'Failed to send OTP. Please try again.');
+            if (error.name === 'AbortError') {
+                showAlert('Request timed out. The server may be waking up. Please try again in a moment.');
+            } else {
+                showAlert(error.message || 'Failed to send OTP. Please try again.');
+            }
             sendOtpBtn.textContent = 'Send OTP to Email';
             sendOtpBtn.disabled = false;
         }

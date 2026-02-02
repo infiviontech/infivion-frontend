@@ -3,7 +3,7 @@
    JavaScript for Navigation, Animations & Contact Form
    ================================================ */
 
-// API Base URL — ONLY Render backend. Never overbridgenet.com or jsv8/offer.
+// API Base URL — ONLY Render backend (infivion-backend.onrender.com).
 const RENDER_API = 'https://infivion-backend.onrender.com/api';
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:5000/api'
